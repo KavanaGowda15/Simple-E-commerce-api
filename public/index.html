@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>E-commerce Frontend</title>
+</head>
+<body>
+  <h2>Simple E-commerce API Frontend</h2>
+
+  <!-- 🔐 Register -->
+  <h3>Register</h3>
+  <input type="text" id="regUsername" placeholder="Username" />
+  <input type="email" id="regEmail" placeholder="Email" />
+  <input type="password" id="regPassword" placeholder="Password" />
+  <select id="regRole">
+    <option value="customer">Customer</option>
+    <option value="admin">Admin</option>
+  </select>
+  <button onclick="register()">Register</button>
+
+  <!-- 🔐 Login -->
+  <h3>Login</h3>
+  <input type="email" id="loginEmail" placeholder="Email" />
+  <input type="password" id="loginPassword" placeholder="Password" />
+  <button onclick="login()">Login</button>
+
+  <hr>
+
+  <!-- 📦 View Products -->
+  <h3>Product List</h3>
+  <button onclick="getProducts()">Load Products</button>
+  <ul id="productList"></ul>
+
+  <script>
+    const API = "http://localhost:5000/api";
+    let token = "";
+
+    async function register() {
+      const username = document.getElementById("regUsername").value;
+      const email = document.getElementById("regEmail").value;
+      const password = document.getElementById("regPassword").value;
+      const role = document.getElementById("regRole").value;
+
+      const res = await fetch(`${API}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password, role })
+      });
+      alert("Registered!");
+    }
+
+    async function login() {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      const res = await fetch(`${API}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+      token = data.token;
+      alert("Logged in successfully!");
+    }
+
+    async function getProducts() {
+      const res = await fetch(`${API}/products`);
+      const data = await res.json();
+      const list = document.getElementById("productList");
+      list.innerHTML = "";
+      data.products.forEach(p => {
+        const item = document.createElement("li");
+        item.innerText = `${p.name} - ₹${p.price}`;
+        list.appendChild(item);
+      });
+    }
+  </script>
+</body>
+</html>
